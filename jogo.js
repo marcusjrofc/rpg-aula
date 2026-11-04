@@ -3,14 +3,18 @@
 // Só uma coisa é nova: Math.random(), que sorteia um número entre 0 e 1.
 const prompt = require("prompt-sync")();
 const heroi = require("./heroi");
+const vila = require("./regioes/vila")
 const sorte = require("./sistemas/sorte");
+
 // ===== CONTROLE DO JOGO =====
 let local = "vila";        // onde o herói está agora
 let jogando = true;        // o jogo continua enquanto for true
-// true = a sorte fica fixa, para o roteiro de teste
+
 
 // ===== HERÓI =====
 heroi.nome = prompt("Qual é o nome do seu herói? ");
+
+
 console.log("");
 console.log(heroi.nome + ", o farol da costa apagou. Alguém precisa chegar lá antes do anoitecer.");
 
@@ -19,28 +23,20 @@ while (jogando) {
   if (heroi.veneno > 0) {
     heroi.vida = heroi.vida - 1;
     heroi.veneno = heroi.veneno - 1;
+    // beber=1;
     console.log("O veneno arde. Vida: " + heroi.vida);
   }
   if (heroi.vida <= 0) {
     console.log("Você caiu no caminho. Fim de jogo.");
     jogando = false;
   } else if (local === "vila") {
-    console.log('[VILA] Bem vindo a vila')
-    if (heroi.inventario.includes("moeda furada") === false && heroi.inventario.includes('corda') === false) {
-      console.log("");
-      console.log("[VILA] Um velho pescador te entrega uma moeda furada: 'Não vale nada. Guarde mesmo assim.'");
-      heroi.inventario.push("moeda furada");
-    }
-    console.log("1 - ir para a floresta   2 - ir para o poço");
-    let escolha = prompt("> ");
-    if (escolha === "1") {
-      local = "floresta";
-    } else if (escolha === "2") {
-      local = "poco";
-    }
+
+    local = vila(heroi)
+
   } else if (local === "floresta") {
     console.log("");
     console.log("[FLORESTA] Galhos fechados. Algo se mexe no chão.");
+
     if (sorte(0.4)) {
       console.log("Uma aranha te morde! Você está envenenado por 3 passos.");
       heroi.veneno = 3;
@@ -65,18 +61,20 @@ while (jogando) {
     if (escolha === "1") {
       local = "vila";
     } else if (escolha === "2") {
-      heroi.vida = Math.min(heroi.vida + 3, 10)
-      // if(vida > 10){
-      //   vida = 10
+
+      heroi.vida = Math.min(heroi.vida + 3, 10);
+
+      // if( vida>10){
+      //   vida=10;
       // }
+
       console.log("A água é gelada. Vida: " + heroi.vida);
     } else if (escolha === "3" && heroi.inventario.includes("moeda furada")) {
       console.log("A moeda cai sem fazer barulho. Uma corda sobe do fundo do poço, sozinha.");
       heroi.inventario.push("corda");
-      // let posicao_moeda = inventario.findIndex(item => item === 'moeda furada')
-      // console.log('posição moeda:', posicao_moeda)
-      // inventario.splice(posicao_moeda, 1)
-      heroi.inventario.shift()
+      heroi.inventario.shift();
+      // // let posicaoMoeda= inventario.findIndex(item => "moeda furada")
+      // inventario.splice(posicaoMoeda,1)
       console.log("Inventário: " + heroi.inventario);
     }
   } else if (local === "ponte") {
